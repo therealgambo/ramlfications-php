@@ -1,0 +1,35 @@
+{
+  "type": "library",
+  "name": "therealgambo/ramlfications-php",
+  "description": "Ramlfications PHP",
+  "require-dev": {
+    "phpunit/phpunit": "5.7.23",
+    "squizlabs/php_codesniffer": "2.0"
+  },
+
+  "autoload": {
+    "psr-4": {
+      "TheRealGambo\\Ramlfications\\": "src/"
+    }
+  },
+
+  "autoload-dev": {
+    "psr-4": {
+      "TheRealGambo\\Ramlfications\\Tests\\": "tests/"
+    }
+  },
+
+  "scripts": {
+    "test": [
+      "vendor/bin/phpunit -c ./phpunit.xml.dist --coverage-html ./coverage/ ./tests/"
+    ]
+  },
+  "require": {
+    "erusev/parsedown": "1.6",
+    "cilex/cilex": "2.0",
+    "icanboogie/inflector": "1.4"
+  },
+  "bin": [
+    "ramlfication"
+  ]
+}

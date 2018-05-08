@@ -1,0 +1,29 @@
+#%RAML 1.0 DataType
+type: object
+description: Information about the user object
+displayName: User
+properties:
+  id:
+    type: number
+    required: false
+  name:
+    type: string
+    required: true
+  email:
+    type: string
+    required: true
+  locked:
+    type: boolean
+    default: false
+    required: false
+  last_auth:
+    type: datetime-only
+    required: false
+example: |
+  {
+    "id": 5985934,
+    "name": "Steve Jobs",
+    "email": "steve@jobs.com",
+    "locked": false,
+    "last_auth": "2018-08-30T14:38:55"
+  }

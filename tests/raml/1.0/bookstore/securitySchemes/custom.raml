@@ -1,0 +1,22 @@
+#%RAML 1.0 SecurityScheme
+description: JWT Authentication using either Authorization header or access_token query parameter
+type: x-custom
+displayName: JWT Authentication
+describedBy:
+  headers:
+    Authorization:
+      description: Used to send a valid JWT access token.
+      type: string
+      pattern: ^Bearer\s[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.(?:[a-zA-Z0-9\-_]+)?$
+      example: Bearer a.b.c
+  queryParameters:
+    access_token:
+      description: Used to send a valid JWT access token.
+      type: string
+      pattern: ^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.(?:[a-zA-Z0-9\-_]+)?$
+      example: a.b.c
+  responses:
+    401:
+      description: The request could not be processed because your authentication credentials are invalid.
+    403:
+      description: The request could not be processed because you do not have access to this protected resource.

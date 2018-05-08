@@ -1,0 +1,77 @@
+#%RAML 1.0
+
+title: Example API
+description: Example API description!
+version: v3
+mediaType: application/json
+baseUri: https://api.example.com/{version}
+baseUriParameters:
+  uriTestVarString:
+    description: base uri param test var
+    type: string
+    default: toto
+  uriTestVarPattern:
+    description: base uri param regex pattern test var
+    type: pattern
+    pattern: \d\.\d\.\d
+    default: 1.2.3
+
+documentation:
+  - title: docs plaintext
+    content: |
+      plain text documentation
+  - title: docs markdown
+    content: |
+      markdown text documentation
+
+securitySchemes:
+  basic:   !include securityScheme/basic.raml
+  oauth20: !include securityScheme/oauth20.raml
+  custom:  !include securityScheme/custom.raml
+
+resourceTypes:
+  web: !include https://raw.githubusercontent.com/raml-org/raml-js-parser-2/master/src/parser/test/data/ASTReuseTests/test05/mainRT.raml
+
+/search:
+  /repositories:
+    protocols: [ HTTP, HTTPS ]
+    type: collection
+    mediaType: application/json
+    get:
+      securedBy: [ basic ]
+      is: [ filterable ]
+      description: Search repositories.
+      queryParameters:
+        q:
+          description: |
+            The search terms. This can be any combination of the supported repository
+            search parameters:
+            'Search In' Qualifies which fields are searched. With this qualifier you
+            can restrict the search to just the repository name, description, readme,
+            or any combination of these.
+            'Size' Finds repositories that match a certain size (in kilobytes).
+            'Forks' Filters repositories based on the number of forks, and/or whether
+            forked repositories should be included in the results at all.
+            'Created' and 'Last Updated' Filters repositories based on times of
+            creation, or when they were last updated.
+            'Users or Repositories' Limits searches to a specific user or repository.
+            'Languages' Searches repositories based on the language they're written in.
+            'Stars' Searches repositories based on the number of stars.
+          type: string
+          required: true
+        sort:
+          description: If not provided, results are sorted by best match.
+          enum:
+            - stars
+            - forks
+            - updated
+        order:
+          enum:
+            - asc
+            - desc
+          default: desc
+      responses:
+        200:
+          description: ok??
+        201:
+          description: totot

@@ -1,0 +1,15 @@
+#%RAML 1.0 SecurityScheme
+type: Basic Authentication
+displayName: Basic Authentication
+description: Basic Authentication via HTTP Authentication header
+describedBy:
+  headers:
+    Authorization:
+      description: Basic authentication required header name
+      type: string
+      required: true
+  responses:
+    401:
+      description: The request could not be processed because your authentication credentials are invalid.
+    403:
+      description: The request could not be processed because you do not have access to this protected resource.

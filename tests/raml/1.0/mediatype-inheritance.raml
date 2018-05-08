@@ -1,0 +1,25 @@
+#%RAML 1.0 ApiDefinition
+
+title: Example API
+description: Example API description!
+version: v3
+baseUri: http://api.example.com/{version}
+mediaType: application/json
+
+/rootmediatype:
+  get:
+    description: inherit media type from root node
+
+/resource:
+  mediaType: [ application/xml, text/html ]
+
+/resource1:
+  mediaType: [ application/xml, text/html, application/json ]
+  get:
+    mediaType: [ text/html ]
+    description: override resource mediaType with method mediaType
+  post:
+    description: inherited from the resource
+  /parent:
+    get:
+      description: inherit mediaTypes from the parent resource

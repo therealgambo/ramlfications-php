@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: response with header
+mediaType: application/json
+
+/example:
+  get:
+    description: response with header
+    responses:
+      200:
+        headers:
+          x-example: string
+          x-example1:
+            type: number
+            minimum: 0
+            maximum: 100
+            default: 50
+

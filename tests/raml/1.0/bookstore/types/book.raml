@@ -1,0 +1,26 @@
+#%RAML 1.0 DataType
+type: object
+description: Book information
+displayName: Book
+properties:
+  name:
+    required: true
+    type: string
+  publish_date:
+    required: true
+    type: date-only
+  isbn:
+    required: true
+    type: string
+    pattern: ^[0-9]{3}-[0-9]{1}-[0-9]{5}-[0-9]{3}-[0-9]{1}$
+    example: 978-1-86197-876-9
+  author_id:
+    required: true
+    type: number
+example: |
+  {
+    "name": "My First Book",
+    "publish_date": "2018-07-14",
+    "isbn": "123-1-34567-983-1",
+    "author_id": 38934
+  }

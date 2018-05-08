@@ -1,0 +1,9 @@
+#%RAML 1.0
+title: example
+baseUri: https://{env}.example.com/{version}
+version: v22
+baseUriParameters:
+  env:
+    type: string
+    enum: [ dev, staging, prod, api ]
+    default: api

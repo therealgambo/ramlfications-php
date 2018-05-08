@@ -1,0 +1,11 @@
+#%RAML 1.0
+title: security schemes
+securitySchemes:
+  basic: !include basic.raml
+  oauth20: !include oauth20.raml
+  oauth10: !include oauth10.raml
+  custom: !include custom.raml
+  digest: !include digest.raml
+  passthrough: !include passthrough.raml
+
+securedBy: [ basic, custom, null ]

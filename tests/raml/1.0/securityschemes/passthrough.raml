@@ -1,0 +1,11 @@
+#%RAML 1.0 SecurityScheme
+description: |
+      This API supports Pass Through Authentication.
+type: Pass Through
+describedBy:
+  queryParameters:
+    query:
+      type: string
+  headers:
+    api_key:
+      type: string

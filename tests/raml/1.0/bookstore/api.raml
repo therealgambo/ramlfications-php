@@ -1,0 +1,160 @@
+#%RAML 1.0
+title: Bookstore example API
+description: Example API description
+version: v1
+baseUri: https://{env}.bookstore.com/{version}
+baseUriParameters:
+  env:
+    type: string
+    enum: [ dev, staging, prod, api ]
+    default: api
+protocols: [ HTTP, HTTPS ]
+mediaType: [ application/json ]
+documentation:
+  - title: Bookstore API
+    content: |
+      This API schema describes how to interact with a fictional
+      API service that simulates an online book store
+types:
+  errorMessage: !include types/errorMessage.raml
+  listApiResources: !include types/listApiResources.raml
+  book: !include types/book.raml
+  author: !include types/author.raml
+  user: !include types/user.raml
+
+traits:
+  secured: !include traits/secured.raml
+
+resourceTypes:
+  base: !include resourceTypes/base.raml
+  item: !include resourceTypes/item.raml
+  collection: !include resourceTypes/collection.raml
+
+# annotationTypes:
+securitySchemes:
+  basic: !include securitySchemes/basic.raml
+  oauth20: !include securitySchemes/oauth20.raml
+  oauth10: !include securitySchemes/oauth10.raml
+  digest: !include securitySchemes/digest.raml
+  passthrough: !include securitySchemes/passthrough.raml
+  custom: !include securitySchemes/custom.raml
+
+securedBy: [ basic, oauth20, custom ]
+# uses:
+
+/:
+  type: base
+  get:
+    description: List all available API resources
+    responses:
+      200:
+        body:
+          type: listApiResources
+
+/auth:
+  type: base
+  post:
+    securedBy: [ null ]
+    description: Authenticate with this service
+    responses:
+      200:
+        body:
+      401:
+        body: errorMessage
+
+/books:
+  type: base
+  get:
+    description: List all available books
+    responses:
+      200:
+        body: book[]
+  put:
+    description: Create a batch of new books
+    body: book
+    responses:
+      201:
+        body: book
+  /{author_id}:
+    get:
+      description: Get all books for a specific author
+      responses:
+        200:
+          body: book[]
+    post:
+      description: Create a new book
+      body: book
+      responses:
+        201:
+          body: book
+    /{book_id}:
+      get:
+        description: Get a specific book
+        responses:
+          200:
+            body: book
+      patch:
+        description: Update a specific book
+        body: book
+        responses:
+          200:
+            body: book
+      delete:
+        description: Delete a specific book
+        responses:
+          204:
+
+/authors:
+  type: base
+  get:
+    description: List all available authors
+    responses:
+      200:
+        body: author[]
+  post:
+    description: Create a new author
+    body: author
+    responses:
+      200:
+        body: author
+  /{author_id}:
+    get:
+      description: Get information about a specific author
+      responses:
+        200:
+          body: author
+    patch:
+      description: Update a specific author
+      body: author
+      responses:
+        200:
+          body: author
+    delete:
+      description: Delete a specific author, and indirectly all associated books
+      responses:
+        204:
+
+/users:
+  type: base
+  get:
+    description: Return all information about the current user
+    responses:
+      200:
+        body: user
+  post:
+    description: Create a new user
+    body: user
+    responses:
+      200:
+        body: user
+  patch:
+    description: Update a user
+    body: user
+    responses:
+      204:
+        body: user
+  delete:
+    description: Delete a user
+    responses:
+      204:
+        body:

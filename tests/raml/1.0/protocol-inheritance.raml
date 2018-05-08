@@ -1,0 +1,24 @@
+#%RAML 1.0 ApiDefinition
+
+title: Example API
+description: Example API description!
+version: v3
+baseUri: http://api.example.com/{version}
+
+/baseuriprotocol:
+  get:
+    description: inherit protocols from base uri
+
+/proto:
+  protocols: [ HTTP, HTTPS ]
+
+/protocols:
+  protocols: [ HTTP, HTTPS ]
+  get:
+    protocols: [ HTTPS ]
+    description: override resource protocol with method protocol
+  post:
+    description: inherited from the resource
+  /parent:
+    get:
+      description: inherit protocols from parent resource

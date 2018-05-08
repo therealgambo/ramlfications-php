@@ -1,0 +1,20 @@
+#%RAML 1.0 ResourceType
+
+get?: &common
+  headers:
+    Accept:
+      description: Is used to set specified media type.
+      type: string
+    X-RateLimit-Limit:
+      type: integer
+    X-RateLimit-Remaining:
+      type: integer
+    X-RateLimit-Reset:
+      type: integer
+  responses:
+    403:
+      description: API rate limit exceeded.
+post?: *common
+patch?: *common
+put?: *common
+delete?: *common

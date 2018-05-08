@@ -1,0 +1,285 @@
+#%RAML 1.0 ApiDefinition
+
+title: Example API
+description: Example API description!
+version: v3
+baseUri: https://api.example.com/{version}
+baseUriParameters:
+  testVar:
+    description: base uri param test var
+    type: string
+    default: toto
+  testVar1:
+    description: base uri param regex pattern test var
+    type: pattern
+    pattern: \d\.\d\.\d
+    default: 1.2.3
+
+mediaType: application/json
+documentation:
+  - title: docs plaintext
+    content: |
+      plain text documentation
+  - title: docs markdown
+    content: |
+      markdown text documentation
+
+securitySchemes:
+  basic:
+    description: Basic Authentication mechanism
+    type: Basic Authentication
+    displayName: Basic Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: Basic auth
+          type: string
+          required: true
+  jwt:
+    description: JWT Authentication using either Authorization header or access_token query parameter
+    type: x-custom
+    displayName: JWT Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: Used to send a valid JWT access token.
+          type: string
+          pattern: ^Bearer\s[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.(?:[a-zA-Z0-9\-_]+)?$
+          example: Bearer a.b.c
+      queryParameters:
+        access_token:
+          description: Used to send a valid JWT access token.
+          type: string
+          pattern: ^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.(?:[a-zA-Z0-9\-_]+)?$
+          example: a.b.c
+      responses:
+        401:
+          description: The request could not be processed because your authentication credentials are invalid.
+        403:
+          description: The request could not be processed because you do not have access to this protected resource.
+          body:
+            application/xml:
+  oauth_2_0:
+    description: |
+      OAuth2 is a protocol that lets external apps request authorization to private
+      details in a user's GitHub account without getting their password. This is
+      preferred over Basic Authentication because tokens can be limited to specific
+      types of data, and can be revoked by users at any time.
+    type: OAuth 2.0
+    displayName: OAuth 2.0 Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: |
+            Used to send a valid OAuth 2 access token. Do not use together with
+            the "access_token" query string parameter.
+          type: string
+      queryParameters:
+        access_token:
+          description: |
+            Used to send a valid OAuth 2 access token. Do not use together with
+            the "Authorization" header
+          type: string
+      responses:
+        401:
+          description: Unauthorized
+    settings:
+      authorizationUri: https://github.com/login/oauth/authorize
+      accessTokenUri: https://github.com/login/oauth/access_token
+      authorizationGrants: [ code ]
+      scopes:
+        - "user"
+        - "user:email"
+        - "user:follow"
+        - "public_repo"
+        - "repo"
+        - "repo:status"
+        - "delete_repo"
+        - "notifications"
+        - "gist"
+securedBy: [ oauth_2_0, basic, jwt, null ]
+
+resourceTypes:
+  base:
+    get?: &common
+      headers:
+        X-GitHub-Media-Type:
+          description: |
+            You can check the current version of media type in responses.
+          type: string
+        Accept:
+          description: Is used to set specified media type.
+          type: string
+        X-RateLimit-Limit:
+          type: integer
+        X-RateLimit-Remaining:
+          type: integer
+        X-RateLimit-Reset:
+          type: integer
+        X-GitHub-Request-Id:
+          type: integer
+      responses:
+        403:
+          description: |
+            API rate limit exceeded. See http://developer.github.com/v3/#rate-limiting
+            for details.
+    post?: *common
+    patch?: *common
+    put?: *common
+    delete?: *common
+  item:
+    type: base
+    get?:
+    post?:
+    patch?:
+    put?:
+    delete?:
+      responses:
+        204:
+          description: Item removed.
+  collection:
+    type: base
+    get?:
+    post?:
+
+traits:
+  - historical:
+      queryParameters:
+        since:
+          description: |
+            Timestamp in ISO 8601 format YYYY-MM-DDTHH:MM:SSZ.
+            Only gists updated at or after this time are returned.
+          type: string
+  - filterable:
+      queryParameters:
+        filter:
+          description: |
+             Issues assigned to you / created by you / mentioning you / you're
+             subscribed to updates for / All issues the authenticated user can see
+          enum:
+            - assigned
+            - created
+            - mentioned
+            - subscribed
+            - all
+          default: all
+          required: true
+        state:
+          enum:
+            - open
+            - closed
+          default: open
+          required: true
+        labels:
+          description: String list of comma separated Label names. Example - bug,ui,@high.
+          type: string
+          required: true
+        sort:
+          enum:
+            - created
+            - updated
+            - comments
+          default: created
+          required: true
+        direction:
+          enum:
+            - asc
+            - desc
+          default: desc
+          required: true
+        since:
+          description: |
+            Optional string of a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+            Only issues updated at or after this time are returned.
+          type: string
+
+/search:
+  /repositories:
+    protocols: [ HTTP, HTTPS ]
+    type: collection
+    mediaType: application/json
+    get:
+      securedBy: [ basic ]
+      is: [ filterable ]
+      description: Search repositories.
+      queryParameters:
+        q:
+          description: |
+            The search terms. This can be any combination of the supported repository
+            search parameters:
+            'Search In' Qualifies which fields are searched. With this qualifier you
+            can restrict the search to just the repository name, description, readme,
+            or any combination of these.
+            'Size' Finds repositories that match a certain size (in kilobytes).
+            'Forks' Filters repositories based on the number of forks, and/or whether
+            forked repositories should be included in the results at all.
+            'Created' and 'Last Updated' Filters repositories based on times of
+            creation, or when they were last updated.
+            'Users or Repositories' Limits searches to a specific user or repository.
+            'Languages' Searches repositories based on the language they're written in.
+            'Stars' Searches repositories based on the number of stars.
+          type: string
+          required: true
+        sort:
+          description: If not provided, results are sorted by best match.
+          enum:
+            - stars
+            - forks
+            - updated
+        order:
+          enum:
+            - asc
+            - desc
+          default: desc
+      responses:
+        200:
+
+  /{toto}:
+    type: collection
+    displayName: haha
+    get:
+      description: toto
+    post:
+      mediaType: application/xml
+      description: toto
+      securedBy: [ null, jwt ]
+  /code:
+    type: collection
+    securedBy: [ basic ]
+    get:
+      description: Search code.
+      queryParameters:
+        q:
+          description: |
+            The search terms. This can be any combination of the supported code
+            search parameters:
+            'Search In' Qualifies which fields are searched. With this qualifier
+            you can restrict the search to just the file contents, the file path,
+            or both.
+            'Languages' Searches code based on the language it's written in.
+            'Forks' Filters repositories based on the number of forks, and/or
+            whether code from forked repositories should be included in the results
+            at all.
+            'Size' Finds files that match a certain size (in bytes).
+            'Path' Specifies the path that the resulting file must be at.
+            'Extension' Matches files with a certain extension.
+            'Users' or 'Repositories' Limits searches to a specific user or repository.
+          type: string
+          required: true
+        sort:
+          description: |
+            Can only be 'indexed', which indicates how recently a file has been indexed
+            by the GitHub search infrastructure. If not provided, results are sorted
+            by best match.
+          enum:
+            - indexed
+        order:
+          enum:
+            - asc
+            - desc
+          default: desc
+      responses:
+        200:
+          headers:
+            X-API-Version:
+              description: api version yo
